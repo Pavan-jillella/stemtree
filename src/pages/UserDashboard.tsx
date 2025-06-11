@@ -88,6 +88,47 @@ export const UserDashboard: React.FC = () => {
     }
   }, [currentSession]);
 
+  const handleStartNewChat = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    const newSession: ChatSession = {
+      id: Math.random().toString(36).substr(2, 9),
+      title: 'New Chat',
+      messages: [],
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    
+    setCurrentSession(newSession);
+    setChatSessions(prev => [newSession, ...prev]);
+    setActiveSection('chat');
+  }, []);
+
+  const renderWelcomeScreen = () => (
+    <div className="p-8 flex flex-col items-center justify-center min-h-[400px]">
+      <div className="text-center space-y-4 mb-8">
+        <h2 className="text-2xl font-bold text-gray-900">Welcome to STEM Chat</h2>
+        <p className="text-gray-600">Ask me anything about STEM topics.</p>
+      </div>
+      <button 
+        onClick={handleStartNewChat}
+        className="inline-flex items-center justify-center p-4 rounded-full bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-200"
+        aria-label="Start new chat"
+      >
+        <svg 
+          xmlns="http://www.w3.org/2000/svg" 
+          className="h-6 w-6" 
+          viewBox="0 0 24 24" 
+          fill="none" 
+          stroke="currentColor" 
+          strokeWidth="2"
+        >
+          <path d="M22 2L11 13" />
+          <path d="M22 2L15 22L11 13L2 9L22 2Z" />
+        </svg>
+      </button>
+    </div>
+  );
+
   const renderContent = () => {
     switch (activeSection) {
       case 'chat':
@@ -105,10 +146,11 @@ export const UserDashboard: React.FC = () => {
               <h2 className="text-2xl font-bold text-gray-900">Chat History</h2>
               <Button 
                 onClick={startNewChat} 
-                className="flex items-center glass-button"
+                size="lg"
+                className="flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-lg shadow-lg hover:shadow-xl transition-all"
               >
-                <MessageSquare className="w-4 h-4 mr-2" />
-                New Chat
+                <MessageSquare className="w-5 h-5 mr-2" />
+                Start New Chat
               </Button>
             </div>
             
@@ -324,17 +366,8 @@ export const UserDashboard: React.FC = () => {
           userRole="user"
         />
         
-        <main className="flex-1 flex flex-col">
-          {activeSection === 'chat' && !currentSession && (
-            <div className="p-6 border-b border-gray-200 bg-white">
-              <Button onClick={startNewChat} size="lg" className="flex items-center">
-                <MessageSquare className="w-5 h-5 mr-2" />
-                Start New Chat
-              </Button>
-            </div>
-          )}
-          
-          {renderContent()}
+        <main className="flex-1 flex flex-col overflow-y-auto">
+          {(activeSection === 'chat' && !currentSession) ? renderWelcomeScreen() : renderContent()}
         </main>
       </div>
 
